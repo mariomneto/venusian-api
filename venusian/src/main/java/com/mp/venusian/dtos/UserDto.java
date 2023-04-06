@@ -1,8 +1,11 @@
 package com.mp.venusian.dtos;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class UserDto {
     @NotBlank
     @Size(max = 100)

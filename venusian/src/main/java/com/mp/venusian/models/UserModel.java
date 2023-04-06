@@ -1,11 +1,15 @@
 package com.mp.venusian.models;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Getter @Setter
 @Table(name = "TB_USER")
 public class UserModel implements Serializable {
     private static final long serialVersionUID = 1L;
