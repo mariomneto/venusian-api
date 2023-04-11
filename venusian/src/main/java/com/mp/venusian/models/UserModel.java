@@ -2,6 +2,8 @@ package com.mp.venusian.models;
 
 import com.google.cloud.Timestamp;
 import com.mp.venusian.enums.RegistrationType;
+import com.mp.venusian.models.Comment.CommentModel;
+import com.mp.venusian.models.Post.PostModel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,4 +27,10 @@ public class UserModel implements Serializable {
     private RegistrationType registrationType;
     @Column(nullable = false)
     private Timestamp registrationDate;
+    @Column(nullable = false)
+    private PostModel posts[];
+    @Column(nullable = false)
+    private CommentModel comments[];
+    @Column(nullable = false)
+    private String[] friends;
 }

@@ -12,4 +12,5 @@ public class PostDto {
     private OriginalPosterDto originalPoster;
     @Size(max = 500)
     private String text;
+    @NotBlank SocialSchemaDto socialSchema;
 }
