@@ -9,6 +9,8 @@ public class PostModel {
     private String id;
     @Column(nullable = false)
     private OriginalPosterModel originalPoster;
+    @Column(nullable = false)
+    private SocialSchemaModel socialSchema;
     @Column(nullable = false, length = 500)
     private String text;
     @Column(nullable = false)

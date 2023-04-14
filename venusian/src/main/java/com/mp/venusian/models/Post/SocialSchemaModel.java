@@ -8,6 +8,4 @@ public class SocialSchemaModel {
     private PostType postType;
     @Column
     private String privateMessageUserId;
-    @Column
-    private String[] bubbleUserIds;
 }

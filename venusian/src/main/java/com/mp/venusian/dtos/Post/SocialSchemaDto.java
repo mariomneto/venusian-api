@@ -7,5 +7,4 @@ public class SocialSchemaDto {
     @NotBlank
     private PostType postType;
     private String privateMessageUserId;
-    private String[] bubbleUserIds;
 }
