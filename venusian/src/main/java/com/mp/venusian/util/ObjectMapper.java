@@ -18,9 +18,6 @@ public class ObjectMapper {
                 String name = field.getName();
                 Object value = field.get(model);
                 if(name != "id" && value != null) {
-                    if(value instanceof Enum) {
-                        value = ((Enum<?>) value).name();
-                    }
                     map.put(name, value);
                 }
             } catch (IllegalAccessException e) {

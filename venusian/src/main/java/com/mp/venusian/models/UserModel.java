@@ -24,6 +24,7 @@ public class UserModel implements Serializable {
     @Column(nullable = false, length = 30)
     private String password;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
     @Column(nullable = false)
     private Timestamp registrationDate;
