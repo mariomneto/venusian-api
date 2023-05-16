@@ -2,7 +2,9 @@ package com.mp.venusian.dtos.Comment;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class CommentDto {
     @NotBlank
     private String parentPostId;

@@ -2,7 +2,9 @@ package com.mp.venusian.models.Comment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
+import lombok.Data;
 
+@Data
 public class CommentModel {
     @Id
     private String id;

@@ -1,72 +1,78 @@
 package com.mp.venusian.controllers;
 
-import com.mp.venusian.dtos.UserDto;
+import com.mp.venusian.dtos.UserRegisterDto;
 import com.mp.venusian.enums.RegistrationType;
-import com.mp.venusian.models.UserModel;
+import com.mp.venusian.models.User;
 import com.mp.venusian.services.UserService;
 import com.mp.venusian.util.Date;
+import com.mp.venusian.util.JwtTokenUtil;
 import com.mp.venusian.util.Test;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.Optional;
-
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping("/user")
-public class UserController {
+public class RegisterController {
     final UserService userService;
+    final JwtTokenUtil jwtTokenUtil;
 
-    public UserController(UserService userService) {
+    public RegisterController(UserService userService, JwtTokenUtil jwtTokenUtil) {
         this.userService = userService;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @PostMapping
-    public ResponseEntity<Object> saveUser(@RequestBody @Valid UserDto userDto) {
-        if(userService.existsBy("email", userDto.getEmail())){
+    @PostMapping("register")
+    public ResponseEntity<Object> register(@RequestBody @Valid UserRegisterDto userRegisterDto) {
+        if(userService.existsBy("email", userRegisterDto.getEmail())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this email already exists.");
         }
-        if(userService.existsBy("phone", userDto.getPhone())){
+        if(userService.existsBy("phone", userRegisterDto.getPhone())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this phone already exists.");
         }
-        if(userDto.getRegistrationType() == null){
+        if(userRegisterDto.getRegistrationType() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User needs a registration type.");
         }
-        if(userDto.getRegistrationType() == RegistrationType.EMAIL && userDto.getEmail() == null){
+        if(userRegisterDto.getRegistrationType() == RegistrationType.EMAIL && userRegisterDto.getEmail() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User needs an email.");
         }
-        if(userDto.getRegistrationType() == RegistrationType.PHONE && userDto.getPhone() == null){
+        if(userRegisterDto.getRegistrationType() == RegistrationType.PHONE && userRegisterDto.getPhone() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User needs a phone.");
         }
-        if(userDto.getEmail() != null && !Test.testEmail(userDto.getEmail())){
+        if(userRegisterDto.getEmail() != null && !Test.testEmail(userRegisterDto.getEmail())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is invalid");
         }
-        if(userDto.getPhone() != null && !Test.testPhone(userDto.getPhone())){
+        if(userRegisterDto.getPhone() != null && !Test.testPhone(userRegisterDto.getPhone())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Phone is invalid");
         }
-        var userModel = new UserModel();
-        BeanUtils.copyProperties(userDto, userModel);
+        var userModel = new User();
+        BeanUtils.copyProperties(userRegisterDto, userModel);
         userModel.setRegistrationDate(Date.now());
         try {
-            UserModel createdModel = userService.save(userModel);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdModel);
+            User newUser = userService.save(userModel);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    jwtTokenUtil.generateToken(newUser.getId())
+                )
+                .body(newUser);
         }
         catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getUser(@PathVariable(value = "id") String id){
-        Optional<UserModel> optionalUserModel = userService.findById(id);
-        if (!optionalUserModel.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(optionalUserModel.get());
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Object> getUser(@PathVariable(value = "id") String id){
+//        Optional<UserModel> optionalUserModel = userService.findById(id);
+//        if (!optionalUserModel.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body(optionalUserModel.get());
+//    }
 
 //    @DeleteMapping("/{id}")
 //    public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") UUID id){

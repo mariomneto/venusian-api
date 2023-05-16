@@ -4,7 +4,9 @@ import com.mp.venusian.enums.PostType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.Data;
 
+@Data
 public class SocialSchemaModel {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

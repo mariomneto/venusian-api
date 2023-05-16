@@ -2,17 +2,21 @@ package com.mp.venusian.models;
 
 import com.google.cloud.Timestamp;
 import com.mp.venusian.enums.RegistrationType;
+import com.mp.venusian.enums.Role;
 import com.mp.venusian.models.Comment.CommentModel;
 import com.mp.venusian.models.Post.PostModel;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Getter @Setter
-public class UserModel implements Serializable {
+@Data
+public class User implements Serializable {
     @Id
     private String id;
     @Column(nullable = false, length = 100)
@@ -27,6 +31,9 @@ public class UserModel implements Serializable {
     @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    @Column(nullable = false)
     private Timestamp registrationDate;
     @Column(nullable = false)
     private PostModel posts[];
@@ -34,4 +41,10 @@ public class UserModel implements Serializable {
     private CommentModel comments[];
     @Column(nullable = false)
     private String[] friends;
+    @Column
+    private List<Token> tokens;
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
 }

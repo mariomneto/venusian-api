@@ -3,14 +3,10 @@ package com.mp.venusian.dtos;
 import com.mp.venusian.enums.RegistrationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter @Setter
-public class UserDto {
-    @NotBlank
-    @Size(max = 100)
-    private String name;
+@Data
+public class UserLoginDto {
     @Size(max = 50)
     private String email;
     @Size(max = 11)
