@@ -28,7 +28,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String auth = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        Optional<User> optionalUser = userService.findByEmailOrPhone(auth);
+//        Optional<User> optionalUser = userService.findByEmailOrPhone(auth);
+        Optional<User> optionalUser = Optional.empty(); //fix
 
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User not found");

@@ -1,6 +1,5 @@
 package com.mp.venusian.models;
 
-import com.google.cloud.Timestamp;
 import com.mp.venusian.enums.RegistrationType;
 import com.mp.venusian.enums.Role;
 import com.mp.venusian.models.Comment.CommentModel;
@@ -12,13 +11,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
+@Table(name = "User")
 public class User implements Serializable {
     @Id
-    private String id;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private UUID id;
     @Column(nullable = false, length = 100)
     private String name;
     @Column(unique = true, length = 50)
@@ -34,7 +37,7 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column(nullable = false)
-    private Timestamp registrationDate;
+    private Date registrationDate;
     @Column(nullable = false)
     private PostModel posts[];
     @Column(nullable = false)

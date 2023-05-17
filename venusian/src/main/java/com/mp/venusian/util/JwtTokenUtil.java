@@ -11,10 +11,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.security.Key;
+import java.util.*;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 import java.util.function.Function;
 
 @Component
@@ -31,15 +29,15 @@ public class JwtTokenUtil {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(String userId) {
+    public String generateToken(UUID userId) {
         return generateToken(new HashMap<>(), userId);
     }
 
     public String generateToken(
             Map<String, Object> extraClaims,
-            String userId
+            UUID userId
     ) {
-        return buildToken(extraClaims, userId, EXPIRATION);
+        return buildToken(extraClaims, userId.toString(), EXPIRATION);
     }
 
     public String generateRefreshToken(
@@ -63,8 +61,8 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public boolean isTokenValid(String token, String userId) {
-        final String tokenId = extractSubject(token);
+    public boolean isTokenValid(String token, UUID userId) {
+        final UUID tokenId = UUID.fromString(extractSubject(token));
         return (tokenId.equals(userId)) && !isTokenExpired(token);
     }
 

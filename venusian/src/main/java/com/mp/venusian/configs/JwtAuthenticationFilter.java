@@ -2,7 +2,7 @@ package com.mp.venusian.configs;
 
 import com.mp.venusian.models.User;
 import com.mp.venusian.util.JwtTokenUtil;
-import com.mp.venusian.services.TokenService;
+//import com.mp.venusian.services.TokenService;
 import com.mp.venusian.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -18,13 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtService;
     private final UserService userService;
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
     private final JwtTokenUtil jwtTokenUtil;
     @Override
     protected void doFilterInternal(
@@ -38,16 +39,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String token = authHeader.substring(7);
-        final String userId = jwtService.extractSubject(token);
+        final UUID userId = UUID.fromString(jwtService.extractSubject(token));
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             boolean isTokenValid;
             User user;
             Optional<User> userRequest = this.userService.findById(userId);
             if(userRequest.isPresent()){
                 user = userRequest.get();
-                isTokenValid = tokenService.findById(token)
-                        .map(t -> !t.isExpired() && !t.isRevoked())
-                        .orElse(false) && jwtService.isTokenValid(token, userId);
+                isTokenValid = true; //fix
+//                isTokenValid = tokenService.findById(token)
+//                        .map(t -> !t.isExpired() && !t.isRevoked())
+//                        .orElse(false) && jwtService.isTokenValid(token, userId);
 
                 if(isTokenValid) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
