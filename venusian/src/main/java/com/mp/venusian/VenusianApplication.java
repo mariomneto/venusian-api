@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
 //@EnableJpaRepositories(basePackages = "com.mp.venusian.*")
-@EnableJpaRepositories
-@EntityScan("com.mp.venusian.*")
+@EnableWebSecurity
+//@EnableJpaRepositories
+//@EntityScan("com.mp.venusian.*")
 //@EnableTransactionManagement
 public class VenusianApplication {
 	public static void main(String[] args) {

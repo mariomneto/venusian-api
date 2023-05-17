@@ -5,6 +5,7 @@ import com.mp.venusian.util.JwtTokenUtil;
 //import com.mp.venusian.services.TokenService;
 import com.mp.venusian.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,10 +13,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,10 +24,10 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtTokenUtil jwtService;
-    private final UserService userService;
-//    private final TokenService tokenService;
-    private final JwtTokenUtil jwtTokenUtil;
+    final JwtTokenUtil jwtService;
+    final UserService userService;
+    final JwtTokenUtil jwtTokenUtil;
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

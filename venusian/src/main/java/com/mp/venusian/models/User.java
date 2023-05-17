@@ -2,10 +2,12 @@ package com.mp.venusian.models;
 
 import com.mp.venusian.enums.RegistrationType;
 import com.mp.venusian.enums.Role;
-import com.mp.venusian.models.Comment.CommentModel;
-import com.mp.venusian.models.Post.PostModel;
+import com.mp.venusian.models.Comment.Comment;
+import com.mp.venusian.models.Post.Post;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -17,10 +19,12 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "User")
+@Table(name = "user")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
     @Column(nullable = false, length = 100)
     private String name;
@@ -33,21 +37,22 @@ public class User implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    @Column(nullable = false)
-    private Date registrationDate;
-    @Column(nullable = false)
-    private PostModel posts[];
-    @Column(nullable = false)
-    private CommentModel comments[];
-    @Column(nullable = false)
-    private String[] friends;
-    @Column
-    private List<Token> tokens;
+//    @Column(nullable = false)
+//    @Enumerated(EnumType.STRING)
+//    private Role role;
+//    @Column(nullable = false)
+//    private Date registrationDate;
+//    @Column(nullable = false)
+//    private Post posts[];
+//    @Column(nullable = false)
+//    private Comment comments[];
+//    @Column(nullable = false)
+//    private String[] friends;
+//    @Column
+//    private List<Token> tokens;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+//        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("USER")); //fix
     }
 }

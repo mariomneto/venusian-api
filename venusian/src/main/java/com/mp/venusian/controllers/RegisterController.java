@@ -53,7 +53,7 @@ public class RegisterController {
         }
         var userModel = new User();
         BeanUtils.copyProperties(userRegisterDto, userModel);
-        userModel.setRegistrationDate(new Date());
+//        userModel.setRegistrationDate(new Date());
         try {
             User newUser = userService.save(userModel);
             return ResponseEntity.status(HttpStatus.CREATED)

@@ -2,6 +2,9 @@ package com.mp.venusian.services;
 
 import com.mp.venusian.models.User;
 import com.mp.venusian.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -10,12 +13,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    UserRepository userRepository;
 
     @Transactional
     public User save(User user) {
