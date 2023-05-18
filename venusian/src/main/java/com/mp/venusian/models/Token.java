@@ -21,7 +21,8 @@ public class Token implements Serializable {
     private UUID id;
     @Column(nullable = false)
     private UUID userId;
-    @Column(nullable = false, unique = true)
+    //    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String token;
     @Column
     private boolean revoked = false;
