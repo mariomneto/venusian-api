@@ -9,12 +9,8 @@ import lombok.Data;
 @Data
 public class UserLoginDto {
     @Size(max = 50)
-    private String email;
-    @Size(max = 11)
-    private String phone;
+    private String login;
     @NotBlank
     @Size(max = 30)
     private String password;
-    @NotNull
-    private RegistrationType registrationType;
 }

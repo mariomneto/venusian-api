@@ -16,20 +16,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
-@EnableWebSecurity
-//@RequiredArgsConstructor
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final CustomAuthenticationProvider authenticationProvider;
-//    private final LogoutHandler logoutHandler;
-
     @Autowired
-    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthFilter, CustomAuthenticationProvider authenticationProvider) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.authenticationProvider = authenticationProvider;
-    }
+    final JwtAuthenticationFilter jwtAuthFilter;
+//    private final LogoutHandler logoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

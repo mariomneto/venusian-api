@@ -22,8 +22,8 @@ import java.util.UUID;
 @Table(name = "user")
 public class User implements Serializable {
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
     @Column(nullable = false, length = 100)
@@ -40,8 +40,8 @@ public class User implements Serializable {
 //    @Column(nullable = false)
 //    @Enumerated(EnumType.STRING)
 //    private Role role;
-//    @Column(nullable = false)
-//    private Date registrationDate;
+    @Column(nullable = false)
+    private Date registrationDate;
 //    @Column(nullable = false)
 //    private Post posts[];
 //    @Column(nullable = false)

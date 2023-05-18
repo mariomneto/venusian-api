@@ -1,6 +1,7 @@
 package com.mp.venusian.configs;
 
 import com.mp.venusian.models.User;
+import com.mp.venusian.services.TokenService;
 import com.mp.venusian.util.JwtTokenUtil;
 //import com.mp.venusian.services.TokenService;
 import com.mp.venusian.services.UserService;
@@ -24,7 +25,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    final JwtTokenUtil jwtService;
+    final TokenService tokenService;
     final UserService userService;
     final JwtTokenUtil jwtTokenUtil;
 
@@ -40,17 +41,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String token = authHeader.substring(7);
-        final UUID userId = UUID.fromString(jwtService.extractSubject(token));
+        final UUID userId = UUID.fromString(jwtTokenUtil.extractSubject(token));
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             boolean isTokenValid;
             User user;
             Optional<User> userRequest = this.userService.findById(userId);
             if(userRequest.isPresent()){
                 user = userRequest.get();
-                isTokenValid = true; //fix
-//                isTokenValid = tokenService.findById(token)
-//                        .map(t -> !t.isExpired() && !t.isRevoked())
-//                        .orElse(false) && jwtService.isTokenValid(token, userId);
+                isTokenValid = tokenService.findByToken(token)
+                        .map(t -> !t.isExpired() && !t.isRevoked())
+                        .orElse(false) && jwtTokenUtil.isTokenValid(token, userId);
 
                 if(isTokenValid) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

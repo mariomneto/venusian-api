@@ -25,11 +25,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String auth = authentication.getName();
+        String login = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-//        Optional<User> optionalUser = userService.findByEmailOrPhone(auth);
-        Optional<User> optionalUser = Optional.empty(); //fix
+        Optional<User> optionalUser = userService.findByEmailOrPhone(login);
 
         if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User not found");

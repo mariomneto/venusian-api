@@ -12,12 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
-//@EnableJpaRepositories(basePackages = "com.mp.venusian.*")
 @EnableWebSecurity
-//@EnableJpaRepositories
-//@EntityScan("com.mp.venusian.*")
-//@EnableTransactionManagement
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
 public class VenusianApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(VenusianApplication.class, args);
@@ -25,6 +21,6 @@ public class VenusianApplication {
 
 	@GetMapping("/")
 	public String index(){
-		return "Olá Mundo!";
+		return "venusian-api";
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,13 +24,28 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public void delete(User user) {
+        userRepository.delete(user);
+    }
+
     public Optional<User> findById(UUID id) {
         return userRepository.findById(id);
     }
 
-//    public Optional<User> findByEmailOrPhone(String value) {
-//        return userRepository.findByEmailOrPhone(value);
-//    }
+    public Optional<User> findByEmailOrPhone(String value) {
+        Optional<User> emailUser = userRepository.findByEmail(value);
+        Optional<User> phoneUser = userRepository.findByPhone(value);
+        return emailUser.isEmpty() ? phoneUser : emailUser;
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<User> findByPhone(String phone) {
+        return userRepository.findByPhone(phone);
+    }
 
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
@@ -38,9 +54,4 @@ public class UserService {
     public boolean existsByPhone(String phone) {
         return userRepository.existsByPhone(phone);
     }
-
-//    @Transactional
-//    public void delete(UserModel userModel) {
-//        userRepository.delete(userModel);
-//    }
 }
