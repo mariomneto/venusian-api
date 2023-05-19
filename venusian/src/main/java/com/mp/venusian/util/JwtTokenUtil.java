@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.security.Key;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Date;
 import java.util.function.Function;
@@ -18,8 +19,7 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil {
     private static final Key PRIVATE_KEY = getKey();
-    private static final long EXPIRATION = 86400000;
-    private static final long REFRESH_EXPIRATION = 604800000;
+    private static final long AUTH_EXPIRATION = 18000000;
     public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -37,13 +37,7 @@ public class JwtTokenUtil {
             Map<String, Object> extraClaims,
             UUID userId
     ) {
-        return buildToken(extraClaims, userId.toString(), EXPIRATION);
-    }
-
-    public String generateRefreshToken(
-            String userId
-    ) {
-        return buildToken(new HashMap<>(), userId, REFRESH_EXPIRATION);
+        return buildToken(extraClaims, userId.toString(), AUTH_EXPIRATION);
     }
 
     private String buildToken(
@@ -59,6 +53,19 @@ public class JwtTokenUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(PRIVATE_KEY, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateRefreshToken() {
+        String subject = UUID.randomUUID().toString();
+        Date expiration = Calendar.getInstance().getTime();
+        expiration.setMonth(expiration.getMonth() + 1);
+        return String.valueOf(Jwts
+                .builder()
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(expiration)
+                .signWith(PRIVATE_KEY, SignatureAlgorithm.HS256)
+                .compact());
     }
 
     public boolean isTokenValid(String token, UUID userId) {

@@ -1,10 +1,8 @@
 package com.mp.venusian.models;
 
+import com.mp.venusian.enums.TokenType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
@@ -21,9 +19,10 @@ public class Token implements Serializable {
     private UUID id;
     @Column(nullable = false)
     private UUID userId;
-    //    @Column(nullable = false, unique = true)
     @Column(nullable = false)
     private String token;
+    @Column(nullable = false)
+    private TokenType tokenType;
     @Column
     private boolean revoked = false;
     @Column

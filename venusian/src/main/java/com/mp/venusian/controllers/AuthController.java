@@ -4,6 +4,8 @@ import com.mp.venusian.configs.CustomAuthenticationProvider;
 import com.mp.venusian.dtos.UserLoginDto;
 import com.mp.venusian.dtos.UserRegisterDto;
 import com.mp.venusian.enums.RegistrationType;
+import com.mp.venusian.enums.TokenType;
+import com.mp.venusian.models.AuthResponse;
 import com.mp.venusian.models.Token;
 import com.mp.venusian.models.User;
 import com.mp.venusian.services.TokenService;
@@ -66,16 +68,20 @@ public class AuthController {
         user.setRegistrationDate(new Date());
         try {
             var newUser = userService.save(user);
-            var token = new Token();
-            token.setToken(jwtTokenUtil.generateToken(newUser.getId()));
-            token.setUserId(newUser.getId());
-            tokenService.save(token);
+            var auth = new Token();
+            auth.setToken(jwtTokenUtil.generateToken(newUser.getId()));
+            auth.setUserId(newUser.getId());
+            auth.setTokenType(TokenType.BEARER);
+            tokenService.save(auth);
+            var refresh = new Token();
+            refresh.setToken(jwtTokenUtil.generateRefreshToken());
+            refresh.setUserId(newUser.getId());
+            refresh.setTokenType(TokenType.REFRESH);
+            tokenService.save(refresh);
+//            var body = new AuthResponse(auth, refresh, user);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .header(
-                            HttpHeaders.AUTHORIZATION,
-                            token.getToken()
-                    )
-                    .body(newUser);
+            //.body(body);
+            .body(user);
         }
         catch(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
