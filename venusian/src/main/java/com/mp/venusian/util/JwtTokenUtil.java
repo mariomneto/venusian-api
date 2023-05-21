@@ -1,6 +1,7 @@
 package com.mp.venusian.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -11,7 +12,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.security.Key;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.Date;
 import java.util.function.Function;
@@ -19,15 +19,7 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil {
     private static final Key PRIVATE_KEY = getKey();
-    private static final long AUTH_EXPIRATION = 18000000;
-    public String extractSubject(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
+    private static final long AUTH_EXPIRATION = 1800000;
 
     public String generateToken(UUID userId) {
         return generateToken(new HashMap<>(), userId);
@@ -59,22 +51,22 @@ public class JwtTokenUtil {
         String subject = UUID.randomUUID().toString();
         Date expiration = Calendar.getInstance().getTime();
         expiration.setMonth(expiration.getMonth() + 1);
-        return String.valueOf(Jwts
+        return  Jwts
                 .builder()
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expiration)
                 .signWith(PRIVATE_KEY, SignatureAlgorithm.HS256)
-                .compact());
+                .compact();
     }
 
-    public boolean isTokenValid(String token, UUID userId) {
-        final UUID tokenId = UUID.fromString(extractSubject(token));
-        return (tokenId.equals(userId)) && !isTokenExpired(token);
+    public String extractSubject(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
     private Date extractExpiration(String token) {
@@ -82,12 +74,26 @@ public class JwtTokenUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(PRIVATE_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try{
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(PRIVATE_KEY)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        }
+        catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    public boolean isTokenValid(String token, UUID userId) {
+        final UUID tokenUserId = UUID.fromString(extractSubject(token));
+        return (tokenUserId.equals(userId) && isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return new Date().before(extractExpiration(token));
     }
 
     public static Key getKey() {
@@ -103,7 +109,6 @@ public class JwtTokenUtil {
         String jsonString = scanner.useDelimiter("\\A").next();
         JSONObject jsonObject = new JSONObject(jsonString);
         String key = jsonObject.getString("key");
-        //System.out.println("jsonString " + jsonString);
         byte[] keyBytes = Decoders.BASE64.decode(key);
         return Keys.hmacShaKeyFor(keyBytes);
     }

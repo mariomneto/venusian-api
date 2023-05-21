@@ -1,9 +1,8 @@
 package com.mp.venusian.configs;
 
 import com.mp.venusian.models.User;
-import com.mp.venusian.services.TokenService;
+import com.mp.venusian.services.AuthTokenService;
 import com.mp.venusian.util.JwtTokenUtil;
-//import com.mp.venusian.services.TokenService;
 import com.mp.venusian.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,11 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    final TokenService tokenService;
+    @Autowired
+    final AuthTokenService tokenService;
+    @Autowired
     final UserService userService;
+    @Autowired
     final JwtTokenUtil jwtTokenUtil;
 
     @Override
@@ -43,15 +45,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String token = authHeader.substring(7);
         final UUID userId = UUID.fromString(jwtTokenUtil.extractSubject(token));
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            boolean isTokenValid;
+            boolean isTokenValid = false;
             User user;
             Optional<User> userRequest = this.userService.findById(userId);
             if(userRequest.isPresent()){
                 user = userRequest.get();
-                isTokenValid = tokenService.findByToken(token)
-                        .map(t -> !t.isExpired() && !t.isRevoked())
-                        .orElse(false) && jwtTokenUtil.isTokenValid(token, userId);
-
+                var userToken = tokenService.findByToken(token);
+                if(userToken.isPresent()) {
+                    isTokenValid = jwtTokenUtil.isTokenValid(userToken.get().getToken(), userId);
+                }
                 if(isTokenValid) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userId, null, user.getAuthorities()

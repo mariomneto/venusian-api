@@ -32,15 +32,13 @@ public class User implements Serializable {
     private String email;
     @Column(unique = true, length = 11)
     private String phone;
-    @Column(nullable = false, length = 30)
-    private String password;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
 //    @Column(nullable = false)
 //    @Enumerated(EnumType.STRING)
 //    private Role role;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATE")
     private Date registrationDate;
 //    @Column(nullable = false)
 //    private Post posts[];
@@ -48,8 +46,6 @@ public class User implements Serializable {
 //    private Comment comments[];
 //    @Column(nullable = false)
 //    private String[] friends;
-//    @Column
-//    private List<Token> tokens;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        return List.of(new SimpleGrantedAuthority(role.name()));

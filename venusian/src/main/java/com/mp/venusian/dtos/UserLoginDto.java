@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class UserLoginDto {
+    @NotBlank
     @Size(max = 50)
     private String login;
     @NotBlank
