@@ -1,15 +1,21 @@
-package com.mp.venusian.dtos.Post;
+package com.mp.venusian.dtos;
 
 import com.mp.venusian.enums.PostType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
-public class SocialSchemaDto {
-    @NotBlank
+public class PostDto {
+    @NotNull
     @Enumerated(EnumType.STRING)
     private PostType postType;
-    private String privateMessageUserId;
+    @NotBlank
+    @Size(max = 280)
+    private String content;
 }

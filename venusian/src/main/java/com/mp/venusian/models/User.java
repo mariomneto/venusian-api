@@ -35,11 +35,11 @@ public class User implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
+    @Column(nullable = false, columnDefinition = "DATE")
+    private Date registrationDate;
 //    @Column(nullable = false)
 //    @Enumerated(EnumType.STRING)
 //    private Role role;
-    @Column(nullable = false, columnDefinition = "DATE")
-    private Date registrationDate;
 //    @Column(nullable = false)
 //    private Post posts[];
 //    @Column(nullable = false)

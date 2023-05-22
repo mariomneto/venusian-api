@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "comments")
+@Table(name = "comment")
 public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)

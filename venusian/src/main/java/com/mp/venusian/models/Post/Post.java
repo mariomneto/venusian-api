@@ -1,27 +1,34 @@
 package com.mp.venusian.models.Post;
 
+import com.mp.venusian.enums.PostType;
 import com.mp.venusian.models.Comment.Comment;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "posts")
+@Table(name = "post")
 public class Post implements Serializable {
     @Id
-    private String id;
-    @Column(nullable = false, length = 500)
-    private String text;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
+    @Column(nullable = false, length = 280)
+    private String content;
     @Column(nullable = false)
-    private String[] words;
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
     @Column(nullable = false)
     private int views;
-    @Column(nullable = false)
-    private Comment[] comments;
     @Embedded
     private OriginalPoster originalPoster;
-    @Embedded
-    private SocialSchema socialSchema;
+//    @Column(nullable = false)
+//    private String[] words;
+//    @Column(nullable = false)
+//    private Comment[] comments;
 }

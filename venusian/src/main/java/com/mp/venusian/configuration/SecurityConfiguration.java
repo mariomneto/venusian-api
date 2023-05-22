@@ -43,15 +43,16 @@ public class SecurityConfiguration {
             .addLogoutHandler(logoutHandler)
             .logoutSuccessHandler((request, response, authentication) -> new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
             .and()
-            .exceptionHandling()
-            .authenticationEntryPoint(
-                    (request, response, ex) -> {
-                        response.sendError(
-                                HttpServletResponse.SC_UNAUTHORIZED,
-                                ex.getMessage()
-                        );
-                    }
-            )
-            .and().build();
+//            .exceptionHandling()
+//            .authenticationEntryPoint(
+//                    (request, response, ex) -> {
+//                        response.sendError(
+//                                HttpServletResponse.SC_UNAUTHORIZED,
+//                                ex.getMessage()
+//                        );
+//                    }
+//            )
+//            .and()
+                .build();
     }
 }

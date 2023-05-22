@@ -13,7 +13,7 @@ import com.mp.venusian.services.AuthTokenService;
 import com.mp.venusian.services.RefreshTokenService;
 import com.mp.venusian.services.UserService;
 import com.mp.venusian.util.JwtTokenUtil;
-import com.mp.venusian.util.Test;
+import com.mp.venusian.util.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
@@ -66,10 +65,10 @@ public class AuthController {
         if(userRegisterDto.getRegistrationType() == RegistrationType.PHONE && userRegisterDto.getPhone() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User needs a phone.");
         }
-        if(userRegisterDto.getEmail() != null && !Test.testEmail(userRegisterDto.getEmail())){
+        if(userRegisterDto.getEmail() != null && !ValidationUtil.validateEmail(userRegisterDto.getEmail())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is invalid");
         }
-        if(userRegisterDto.getPhone() != null && !Test.testPhone(userRegisterDto.getPhone())){
+        if(userRegisterDto.getPhone() != null && !ValidationUtil.validatePhone(userRegisterDto.getPhone())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Phone is invalid");
         }
         try {
