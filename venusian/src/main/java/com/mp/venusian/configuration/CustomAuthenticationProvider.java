@@ -1,4 +1,4 @@
-package com.mp.venusian.configs;
+package com.mp.venusian.configuration;
 
 import com.mp.venusian.models.Password;
 import com.mp.venusian.models.User;

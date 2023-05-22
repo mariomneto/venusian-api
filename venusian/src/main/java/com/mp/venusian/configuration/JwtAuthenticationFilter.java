@@ -1,4 +1,4 @@
-package com.mp.venusian.configs;
+package com.mp.venusian.configuration;
 
 import com.mp.venusian.models.User;
 import com.mp.venusian.services.AuthTokenService;
@@ -6,6 +6,7 @@ import com.mp.venusian.util.JwtTokenUtil;
 import com.mp.venusian.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,8 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null|| !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }

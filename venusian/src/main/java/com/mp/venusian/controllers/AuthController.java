@@ -1,6 +1,6 @@
 package com.mp.venusian.controllers;
 
-import com.mp.venusian.configs.CustomAuthenticationProvider;
+import com.mp.venusian.configuration.CustomAuthenticationProvider;
 import com.mp.venusian.dtos.UserLoginDto;
 import com.mp.venusian.dtos.UserRefreshDto;
 import com.mp.venusian.dtos.UserRegisterDto;
