@@ -73,9 +73,7 @@ public class AuthController {
         }
         try {
             var user = storeNewUser(userRegisterDto);
-            var authToken = generateNewAuthTokenForUser(user.getId());
-            var refreshToken = generateNewRefreshTokenForUser(user.getId());
-            var body = new AuthResponse(authToken, refreshToken, user);
+            var body = new AuthResponse(generateNewAccessTokenForUser(user.getId()), user);
             return ResponseEntity.status(HttpStatus.CREATED).body(body);
         }
         catch(Exception e) {
@@ -90,9 +88,7 @@ public class AuthController {
             User user = (User) authenticate.getPrincipal();
             authTokenService.deleteByUserId(user.getId());
             refreshTokenService.deleteByUserId(user.getId());
-            var authToken = generateNewAuthTokenForUser(user.getId());
-            var refreshToken = generateNewRefreshTokenForUser(user.getId());
-            var body = new AuthResponse(authToken, refreshToken, user);
+            var body = new AuthResponse(generateNewAccessTokenForUser(user.getId()), user);
             return ResponseEntity.ok().body(body);
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -107,10 +103,8 @@ public class AuthController {
         if(!jwtTokenUtil.isTokenValid(authToken, userId)){
             authTokenService.deleteByUserId(userId);
             refreshTokenService.deleteByUserId(userId);
-            authToken = generateNewAuthTokenForUser(userId);
-            refreshToken = generateNewRefreshTokenForUser(userId);
         }
-        var body = new TokenResponse(authToken, refreshToken);
+        var body = generateNewAccessTokenForUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
@@ -126,17 +120,19 @@ public class AuthController {
         return newUser;
     }
 
-    private String generateNewAuthTokenForUser(UUID userId) {
+    private TokenResponse generateNewAccessTokenForUser(UUID userId) {
         var auth = new AuthToken();
-        auth.setToken(jwtTokenUtil.generateToken(userId));
+        var generatedAuth = jwtTokenUtil.generateToken(userId);
+        auth.setToken(generatedAuth.getToken());
+        auth.setExpirationDate(generatedAuth.getExpiration());
         auth.setUserId(userId);
-        return authTokenService.save(auth).getToken();
-    }
-
-    private String generateNewRefreshTokenForUser(UUID userId) {
+        authTokenService.save(auth).getToken();
         var refresh = new RefreshToken();
-        refresh.setToken(jwtTokenUtil.generateRefreshToken());
+        var generatedRefresh = jwtTokenUtil.generateRefreshToken();
+        refresh.setToken(generatedRefresh.getToken());
+        refresh.setExpirationDate(generatedRefresh.getExpiration());
         refresh.setUserId(userId);
-        return refreshTokenService.save(refresh).getToken();
+        refreshTokenService.save(refresh).getToken();
+        return new TokenResponse(auth.getToken(), auth.getExpirationDate(), refresh.getToken(), refresh.getExpirationDate());
     }
 }

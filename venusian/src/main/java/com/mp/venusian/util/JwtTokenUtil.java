@@ -1,5 +1,6 @@
 package com.mp.venusian.util;
 
+import com.mp.venusian.models.TokenExpiration;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -21,43 +22,46 @@ public class JwtTokenUtil {
     private static final Key PRIVATE_KEY = getKey();
     private static final long AUTH_EXPIRATION = 1800000;
 
-    public String generateToken(UUID userId) {
+    public TokenExpiration generateToken(UUID userId) {
         return generateToken(new HashMap<>(), userId);
     }
 
-    public String generateToken(
+    public TokenExpiration generateToken(
             Map<String, Object> extraClaims,
             UUID userId
     ) {
         return buildToken(extraClaims, userId.toString(), AUTH_EXPIRATION);
     }
 
-    private String buildToken(
+    private TokenExpiration buildToken(
             Map<String, Object> extraClaims,
             String userId,
             long expiration
     ) {
-        return Jwts
+        var expirationDate = new Date(System.currentTimeMillis() + expiration);
+        var token = Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userId)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(expirationDate)
                 .signWith(PRIVATE_KEY, SignatureAlgorithm.HS256)
                 .compact();
+        return new TokenExpiration(token, expirationDate);
     }
 
-    public String generateRefreshToken() {
+    public TokenExpiration generateRefreshToken() {
         String subject = UUID.randomUUID().toString();
-        Date expiration = Calendar.getInstance().getTime();
-        expiration.setMonth(expiration.getMonth() + 1);
-        return  Jwts
+        Date expirationDate = Calendar.getInstance().getTime();
+        expirationDate.setMonth(expirationDate.getMonth() + 1);
+        var token =  Jwts
                 .builder()
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(expiration)
+                .setExpiration(expirationDate)
                 .signWith(PRIVATE_KEY, SignatureAlgorithm.HS256)
                 .compact();
+        return new TokenExpiration(token, expirationDate);
     }
 
     public String extractSubject(String token) {
