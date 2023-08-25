@@ -1,8 +1,6 @@
 package com.mp.venusian.dtos;
 
-import com.mp.venusian.enums.RegistrationType;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 

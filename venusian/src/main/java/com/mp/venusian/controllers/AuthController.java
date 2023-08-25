@@ -4,7 +4,6 @@ import com.mp.venusian.configuration.CustomAuthenticationProvider;
 import com.mp.venusian.dtos.UserLoginDto;
 import com.mp.venusian.dtos.UserRefreshDto;
 import com.mp.venusian.dtos.UserRegisterDto;
-import com.mp.venusian.enums.RegistrationType;
 import com.mp.venusian.models.*;
 import com.mp.venusian.models.Response.AuthResponse;
 import com.mp.venusian.models.Response.TokenResponse;
@@ -56,15 +55,6 @@ public class AuthController {
         }
         if(userRegisterDto.getPhone() != null && userService.existsByPhone(userRegisterDto.getPhone())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this phone already exists.");
-        }
-        if(userRegisterDto.getRegistrationType() == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User needs a registration type.");
-        }
-        if(userRegisterDto.getRegistrationType() == RegistrationType.EMAIL && userRegisterDto.getEmail() == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User needs an email.");
-        }
-        if(userRegisterDto.getRegistrationType() == RegistrationType.PHONE && userRegisterDto.getPhone() == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User needs a phone.");
         }
         if(userRegisterDto.getEmail() != null && !Test.testEmail(userRegisterDto.getEmail())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is invalid");

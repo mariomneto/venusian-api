@@ -1,11 +1,7 @@
 package com.mp.venusian.models;
 
-import com.mp.venusian.enums.RegistrationType;
 import com.mp.venusian.enums.Role;
-import com.mp.venusian.models.Comment.Comment;
-import com.mp.venusian.models.Post.Post;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,18 +30,9 @@ public class User implements Serializable {
     private String phone;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private RegistrationType registrationType;
-//    @Column(nullable = false)
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
+    private Role role;
     @Column(nullable = false, columnDefinition = "DATE")
     private Date registrationDate;
-//    @Column(nullable = false)
-//    private Post posts[];
-//    @Column(nullable = false)
-//    private Comment comments[];
-//    @Column(nullable = false)
-//    private String[] friends;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        return List.of(new SimpleGrantedAuthority(role.name()));

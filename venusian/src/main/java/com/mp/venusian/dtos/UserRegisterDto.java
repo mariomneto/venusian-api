@@ -1,6 +1,5 @@
 package com.mp.venusian.dtos;
 
-import com.mp.venusian.enums.RegistrationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -18,6 +17,4 @@ public class UserRegisterDto {
     @NotBlank
     @Size(max = 30)
     private String password;
-    @NotNull
-    private RegistrationType registrationType;
 }
