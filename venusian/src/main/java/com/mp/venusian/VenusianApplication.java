@@ -20,6 +20,6 @@ public class VenusianApplication {
 
 	@GetMapping("/")
 	public String index(){
-		return "game-credit-api";
+		return "sales";
 	}
 }

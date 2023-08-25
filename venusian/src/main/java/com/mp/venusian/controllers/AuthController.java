@@ -55,7 +55,7 @@ public class AuthController {
         if (userRegisterDto.getPhone() != null && userService.existsByPhone(userRegisterDto.getPhone())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this phone already exists.");
         }
-        if (userRegisterDto.getEmail() != null && !Test.testEmail(userRegisterDto.getEmail())) {
+        if (userRegisterDto.getEmail() != null && !ValidationUtil.validateEmail(userRegisterDto.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is invalid");
         }
         if (userRegisterDto.getPhone() != null && !ValidationUtil.validatePhone(userRegisterDto.getPhone())) {

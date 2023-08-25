@@ -5,39 +5,33 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "purchase")
-public class Purchase implements Serializable {
+@Table(name = "projection")
+public class Projection implements Serializable {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-
-    @Column(nullable = false, columnDefinition = "DATE")
-    private Date dateOfPurchase;
     @Column(nullable = false)
-    private float totalPrice;
+    private UUID userId;
     @Column(nullable = false)
-    private float shipping;
+    private float exposure;
     @Column(nullable = false)
-    private List<ProductPurchase> productPurchases;
+    private float projectedProfitOnExposure;
     @Column(nullable = false)
-    private float saleTargetValue;
+    private float projectedProfitOnExposurePercentage;
     @Column(nullable = false)
-    private float saleTargetValueWithTaxes;
+    private float optimisticProjectedProfitOnExposurePercentage;
     @Column(nullable = false)
-    private float totalProjectedProfit;
+    private float projectedReturn;
     @Column(nullable = false)
-    private float projectedProfitPercentage;
+    private float projectedReturnPercentage;
     @Column(nullable = false)
-    private float optimisticTotalProfit;
+    private float optimisticProjectedReturn;
     @Column(nullable = false)
-    private float optimisticProfitPercentage;
-
+    private float optimisticProjectedReturnPercentage;
 }

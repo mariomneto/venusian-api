@@ -1,8 +1,9 @@
 package com.mp.venusian.enums;
 
 public enum Role {
-    USER("USER"),
-    ADMIN("ADMIN");
+
+    ADMIN("ADMIN"),
+    INVESTOR("INVESTOR");
 
     private String value;
 

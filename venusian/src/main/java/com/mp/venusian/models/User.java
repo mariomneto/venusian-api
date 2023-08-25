@@ -28,23 +28,11 @@ public class User implements Serializable {
     private String email;
     @Column(unique = true, length = 11)
     private String phone;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    @Column(nullable = false, columnDefinition = "DATE")
-    private Date registrationDate;
-    private RegistrationType registrationType;
-    @Column(nullable = false, columnDefinition = "DATE")
-    private Date registrationDate;
 //    @Column(nullable = false)
 //    @Enumerated(EnumType.STRING)
 //    private Role role;
-//    @Column(nullable = false)
-//    private Post posts[];
-//    @Column(nullable = false)
-//    private Comment comments[];
-//    @Column(nullable = false)
-//    private String[] friends;
+    @Column(nullable = false, columnDefinition = "DATE")
+    private Date registrationDate;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        return List.of(new SimpleGrantedAuthority(role.name()));
