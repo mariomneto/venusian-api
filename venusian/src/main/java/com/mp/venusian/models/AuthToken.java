@@ -1,11 +1,11 @@
 package com.mp.venusian.models;
 
-import com.mp.venusian.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -21,4 +21,6 @@ public class AuthToken implements Serializable {
     private UUID userId;
     @Column(nullable = false)
     private String token;
+    @Column(nullable = false)
+    private Date expirationDate;
 }

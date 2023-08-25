@@ -12,7 +12,7 @@ import com.mp.venusian.services.AuthTokenService;
 import com.mp.venusian.services.RefreshTokenService;
 import com.mp.venusian.services.UserService;
 import com.mp.venusian.util.JwtTokenUtil;
-import com.mp.venusian.util.Test;
+import com.mp.venusian.util.ValidationUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
@@ -50,40 +49,37 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody @Valid UserRegisterDto userRegisterDto) {
-        if(userRegisterDto.getEmail() != null && userService.existsByEmail(userRegisterDto.getEmail())){
+        if (userRegisterDto.getEmail() != null && userService.existsByEmail(userRegisterDto.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this email already exists.");
         }
-        if(userRegisterDto.getPhone() != null && userService.existsByPhone(userRegisterDto.getPhone())){
+        if (userRegisterDto.getPhone() != null && userService.existsByPhone(userRegisterDto.getPhone())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this phone already exists.");
         }
-        if(userRegisterDto.getEmail() != null && !Test.testEmail(userRegisterDto.getEmail())){
+        if (userRegisterDto.getEmail() != null && !Test.testEmail(userRegisterDto.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is invalid");
         }
-        if(userRegisterDto.getPhone() != null && !Test.testPhone(userRegisterDto.getPhone())){
+        if (userRegisterDto.getPhone() != null && !ValidationUtil.validatePhone(userRegisterDto.getPhone())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Phone is invalid");
         }
         try {
             var user = storeNewUser(userRegisterDto);
-            var authToken = generateNewAuthTokenForUser(user.getId());
-            var refreshToken = generateNewRefreshTokenForUser(user.getId());
-            var body = new AuthResponse(authToken, refreshToken, user);
+            var body = new AuthResponse(generateNewAccessTokenForUser(user.getId()), user);
             return ResponseEntity.status(HttpStatus.CREATED).body(body);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
+
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody @Valid UserLoginDto userLoginDto) {
         try {
-            var credentials = new UsernamePasswordAuthenticationToken(userLoginDto.getLogin(), userLoginDto.getPassword());
+            var credentials = new UsernamePasswordAuthenticationToken(userLoginDto.getLogin(),
+                    userLoginDto.getPassword());
             Authentication authenticate = authenticationProvider.authenticate(credentials);
             User user = (User) authenticate.getPrincipal();
             authTokenService.deleteByUserId(user.getId());
             refreshTokenService.deleteByUserId(user.getId());
-            var authToken = generateNewAuthTokenForUser(user.getId());
-            var refreshToken = generateNewRefreshTokenForUser(user.getId());
-            var body = new AuthResponse(authToken, refreshToken, user);
+            var body = new AuthResponse(generateNewAccessTokenForUser(user.getId()), user);
             return ResponseEntity.ok().body(body);
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -95,13 +91,11 @@ public class AuthController {
         var authToken = userRefreshDto.getAuthToken();
         var refreshToken = userRefreshDto.getRefreshToken();
         final UUID userId = UUID.fromString(jwtTokenUtil.extractSubject(authToken));
-        if(!jwtTokenUtil.isTokenValid(authToken, userId)){
+        if (!jwtTokenUtil.isTokenValid(authToken, userId)) {
             authTokenService.deleteByUserId(userId);
             refreshTokenService.deleteByUserId(userId);
-            authToken = generateNewAuthTokenForUser(userId);
-            refreshToken = generateNewRefreshTokenForUser(userId);
         }
-        var body = new TokenResponse(authToken, refreshToken);
+        var body = generateNewAccessTokenForUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
@@ -117,17 +111,20 @@ public class AuthController {
         return newUser;
     }
 
-    private String generateNewAuthTokenForUser(UUID userId) {
+    private TokenResponse generateNewAccessTokenForUser(UUID userId) {
         var auth = new AuthToken();
-        auth.setToken(jwtTokenUtil.generateToken(userId));
+        var generatedAuth = jwtTokenUtil.generateToken(userId);
+        auth.setToken(generatedAuth.getToken());
+        auth.setExpirationDate(generatedAuth.getExpiration());
         auth.setUserId(userId);
-        return authTokenService.save(auth).getToken();
-    }
-
-    private String generateNewRefreshTokenForUser(UUID userId) {
+        authTokenService.save(auth).getToken();
         var refresh = new RefreshToken();
-        refresh.setToken(jwtTokenUtil.generateRefreshToken());
+        var generatedRefresh = jwtTokenUtil.generateRefreshToken();
+        refresh.setToken(generatedRefresh.getToken());
+        refresh.setExpirationDate(generatedRefresh.getExpiration());
         refresh.setUserId(userId);
-        return refreshTokenService.save(refresh).getToken();
+        refreshTokenService.save(refresh).getToken();
+        return new TokenResponse(auth.getToken(), auth.getExpirationDate(), refresh.getToken(),
+                refresh.getExpirationDate());
     }
 }

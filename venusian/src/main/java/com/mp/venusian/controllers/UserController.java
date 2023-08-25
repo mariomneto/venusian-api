@@ -2,8 +2,10 @@ package com.mp.venusian.controllers;
 
 import com.mp.venusian.models.User;
 import com.mp.venusian.services.UserService;
+import com.mp.venusian.util.HeaderUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,30 +14,36 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
-@RequestMapping("user")
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     final UserService userService;
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getUser(@PathVariable(value = "id") UUID id){
-        //todo pegar user do header
-        Optional<User> optionalUserModel = userService.findById(id);
-        if (!optionalUserModel.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+    @Autowired
+    final HeaderUtil headerUtil;
+    @GetMapping("/me")
+    public ResponseEntity<Object> getMe(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader){
+        var userId = headerUtil.getUserIdFromAuthHeader(authHeader);
+        if(userId.isPresent()) {
+            Optional<User> user = userService.findById(userId.get());
+            if(user.isPresent()){
+                return ResponseEntity.status((HttpStatus.OK)).body(user);
+            }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(optionalUserModel.get());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable(value = "id") UUID id){
-        Optional<User> optionalUser = userService.findById(id);
-        if (!optionalUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+    @DeleteMapping("/me")
+    public ResponseEntity<Object> deleteMe(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader){
+        var userId = headerUtil.getUserIdFromAuthHeader(authHeader);
+        if(userId.isPresent()) {
+            Optional<User> user = userService.findById(userId.get());
+            if(user.isPresent()){
+                userService.deleteById(userId.get());
+                return ResponseEntity.status((HttpStatus.OK)).body("User deleted successfully.");
+            }
         }
-        userService.delete(optionalUser.get());
-        return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
     }
 
 //    @PutMapping("/{id}")

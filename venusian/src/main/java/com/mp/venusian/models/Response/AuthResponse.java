@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class AuthResponse {
-    final String authToken;
-    final String refreshToken;
+    final TokenResponse token;
     final User user;
 }

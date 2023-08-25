@@ -25,8 +25,8 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(User user) {
-        userRepository.delete(user);
+    public void deleteById(UUID id) {
+        userRepository.deleteById(id);
     }
 
     public Optional<User> findById(UUID id) {
